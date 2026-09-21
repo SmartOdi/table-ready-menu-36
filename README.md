@@ -1,102 +1,126 @@
-# Remix of Table Ready
+# 🍽️ Commande à Table — Application de commande par QR Code pour restaurants
 
-NOM DU PROJET : Système de commande par QR Code pour restaurants (Version Démo / Portfolio)
+Application web complète qui permet aux clients d'un restaurant de consulter la carte et de commander
+depuis leur téléphone en scannant un QR Code posé sur la table. Les commandes arrivent instantanément
+sur l'écran de la cuisine et sur celui de la caisse, sans rechargement de page.
 
-CONTEXTE : Je crée un prototype configurable pour démarcher des restaurateurs à Cotonou. Ce n'est pas un SaaS multi-tenant complexe. C'est un template unique et modulable. Pour chaque nouveau client, je dupliquerai ce projet et changerai simplement le nom, le logo, les couleurs et le menu via une interface admin simple.
+---
 
+## ✨ Les quatre espaces de l'application
 
-1. ARCHITECTURE TECHNIQUE
+### 📱 Espace Client — `/t/:table`
+Accessible en scannant le QR Code de la table, sans installation ni création de compte.
+- Carte du restaurant organisée par catégories, avec photos, descriptions et prix
+- Recherche et filtres (plats disponibles, badges « Nouveau », « Populaire », « Végétarien »…)
+- Panier interactif avec quantités, notes par plat et total en direct
+- Envoi de la commande en un geste, suivi de son statut en temps réel
+- Bouton « Appeler un serveur »
 
-Frontend : React + TypeScript (avec Tailwind CSS).
+### 👨‍🍳 Écran Cuisine (KDS) — `/cuisine`
+Pensé pour un écran fixe en cuisine, lisible à distance.
+- Affichage temps réel des nouvelles commandes, regroupées par table
+- Changement de statut en un clic : *Reçue* → *En préparation* → *Prête* → *Servie*
+- Alerte sonore à chaque nouvelle commande
+- Accès rapide sécurisé par code PIN
 
-Backend & Base de données : Supabase (PostgreSQL).
+### 🧾 Écran Caisse — `/caisse`
+- Liste des commandes en cours et de celles à encaisser
+- Chiffre d'affaires du jour et nombre de couverts
+- Historique consultable par date
+- Impression de tickets et de factures
 
-Authentification : Seulement pour les rôles "Caissier" et "Cuisinier" (pas besoin d'auth pour les clients).
+### ⚙️ Gérance & Administration — `/gerance` et `/admin`
+- Gestion complète du menu : catégories, plats, photos, prix, badges, ruptures de stock
+- Import de la carte en masse via fichier CSV
+- Gestion des tables et génération/téléchargement des QR Codes
+- Gestion des membres du personnel, des rôles et des codes PIN d'accès
+- Tableau de bord des ventes
 
-2. BASE DE DONNÉES (Tables nécessaires)
+---
 
-restaurants : Une seule ligne pour ce prototype. Contient nom, logo_url, couleur_principale (hex), couleur_secondaire, telephone, adresse.
+## 🛠️ Stack technique
 
-tables : Liste des tables. Colonnes : id, numero_table (ex: "A1", "A2"), qr_code_url (chemin généré).
+| Domaine | Technologie |
+| --- | --- |
+| Framework | TanStack Start (React 19, SSR + server functions) |
+| Langage | TypeScript |
+| Build | Vite 7 |
+| Styles | Tailwind CSS v4 — thème sombre « glassmorphism » sur mesure |
+| Composants | Radix UI / shadcn |
+| Données & temps réel | PostgreSQL (Supabase) avec Row Level Security et abonnements temps réel |
+| Authentification | Supabase Auth (email/mot de passe + rôles) |
 
-categories : Ex: "Entrées", "Plats", "Boissons", "Desserts".
+Trois palettes distinctes structurent l'interface : ambre/orange pour l'espace client,
+bleu/violet pour l'administration, émeraude pour la cuisine.
 
-menu_items : Chaque plat. Colonnes : nom, description, prix (nombre), image_url, categorie_id (clé étrangère), disponible (boolean).
+---
 
-orders : Une commande passée. Colonnes : id, table_id (clé étrangère), statut (enum: 'recu', 'en_preparation', 'servi'), created_at, total.
+## 🔐 Sécurité
 
-order_items : Ligne de commande. Colonnes : order_id (clé étrangère), menu_item_id (clé étrangère), quantite, prix_unitaire.
+- Row Level Security activée sur l'ensemble des tables, avec des règles par rôle
+- Les rôles utilisateurs sont stockés dans une table dédiée (jamais sur le profil), afin d'éviter
+  toute élévation de privilèges
+- Les codes PIN du personnel sont hachés côté serveur avec un sel secret (`PIN_PEPPER`)
+- Le tout premier compte administrateur se crée avec un code d'installation (`ADMIN_SETUP_CODE`)
+- Aucun secret n'est présent dans le dépôt : `.env` est ignoré par Git
 
-3. FLUX UTILISATEUR (LE CŒUR DE L'APP)
+---
 
-A) Côté Client (sans connexion) :
+## 🚀 Démarrage en local
 
-Le client scanne le QR code posé sur sa table.
-
-Il arrive sur une page d'accueil avec le nom et le logo du restaurant (variables dynamiques).
-
-Il parcourt le menu par catégories (avec photos, descriptions, prix).
-
-Il ajoute des plats dans un panier.
-
-Il valide sa commande. Le système enregistre automatiquement le numero_table (transmis via l'URL/QR code) dans la commande.
-
-Un message de confirmation s'affiche. Aucun paiement en ligne pour cette version (juste un envoi de commande).
-
-B) Côté Restaurant (Dashboard sécurisé par mot de passe) :
-
-Le cuisinier ou le caissier se connecte sur /dashboard.
-
-Il voit une liste en temps réel des commandes reçues, triées par statut (recu > en_preparation > servi).
-
-Il peut cliquer sur "Préparer" (passe en en_preparation) puis "Servir" (passe en servi).
-
-Quand il clique sur "Servir", le système génère automatiquement une facture récapitulative (avec le détail des plats, le total, le numéro de table) qui s'affiche à l'écran (ou est imprimable).
-
-4. INTERFACE ADMIN (POUR MOI, LE CONSULTANT)
-
-Une page /admin protégée par un super-mot-de-passe.
-
-Dans cette page, je peux modifier en 2 clics :
-
-Le nom du resto.
-
-Le logo (upload d'image).
-
-La couleur primaire (le thème visuel change partout).
-
-Ajouter / Modifier / Supprimer des plats et des catégories.
-
-Ajouter / Modifier les numéros de table et regénérer les QR codes.
-
-5. PRIORITÉ ABSOLUE : LA SIMPLICITÉ
-
-L'interface client doit être ultra-rapide et responsive (mobile-first, car les clients scannent avec leur téléphone).
-
-Le dashboard cuisine/caisse doit être clair et épuré (pas de fioritures, que l'essentiel pour ne pas perdre le restaurateur).
-
-Le code doit être propre pour que je puisse dupliquer ce projet facilement pour chaque nouveau restaurant sans casser l'existant.
-Tu penses que tu peux le faire ?? si oui je t'envoie le kit branding pour le visuel.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://table-ready-menu-36.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/ad824928-fb2c-4f4b-9de6-43a9e30a2e09).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Prérequis : Node.js 20+ et npm.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+git clone <url-du-depot>
+cd <nom-du-depot>
+npm install
+cp .env.example .env   # puis renseignez vos valeurs
 npm run dev
 ```
+
+L'application est alors disponible sur `http://localhost:8080`.
+
+### Variables d'environnement
+
+Côté client (`.env`) :
+
+| Variable | Rôle |
+| --- | --- |
+| `VITE_SUPABASE_URL` | URL de l'instance de base de données |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clé publique (conçue pour être exposée) |
+| `VITE_SUPABASE_PROJECT_ID` | Identifiant du projet |
+
+Côté serveur (à définir dans les variables d'environnement de l'hébergeur, **jamais** dans le dépôt) :
+
+| Variable | Rôle |
+| --- | --- |
+| `ADMIN_SETUP_CODE` | Code permettant au premier compte de devenir administrateur |
+| `PIN_PEPPER` | Sel secret utilisé pour le hachage des codes PIN du personnel |
+
+---
+
+## 📜 Scripts disponibles
+
+| Commande | Description |
+| --- | --- |
+| `npm run dev` | Serveur de développement avec rechargement à chaud |
+| `npm run build` | Build de production |
+| `npm run preview` | Prévisualisation du build de production |
+| `npm run lint` | Analyse statique du code |
+| `npm run format` | Formatage automatique |
+
+---
+
+## 🗺️ Premiers pas après l'installation
+
+1. Rendez-vous sur `/auth` et créez votre compte en saisissant le code d'installation administrateur.
+2. Dans `/gerance`, créez vos catégories puis vos plats.
+3. Créez vos tables et téléchargez leurs QR Codes.
+4. Définissez les codes PIN d'accès de la cuisine et de la caisse.
+5. Imprimez les QR Codes, posez-les sur les tables — le service peut commencer.
+
+---
+
+## 📄 Licence
+
+Projet privé. Tous droits réservés.
