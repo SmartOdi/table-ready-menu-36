@@ -1,0 +1,429 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system — Dark glassmorphism, halo orange chaud.
+ * Une seule couleur d'accent : --primary (surchargée dynamiquement
+ * par la couleur choisie dans l'admin, via BrandProvider).
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 12px);
+  --radius-3xl: calc(var(--radius) + 20px);
+  --radius-4xl: calc(var(--radius) + 28px);
+
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-cyan: var(--cyan);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-cta-strong: var(--cta-strong);
+  --color-icon-accent: var(--icon-accent);
+  --color-price: var(--price);
+  --color-status-recu: var(--status-recu);
+  --color-status-preparation: var(--status-preparation);
+  --color-status-servi: var(--status-servi);
+
+  --shadow-glass: 0 18px 50px -24px rgb(0 0 0 / 0.85);
+  --shadow-glow: 0 12px 30px -10px color-mix(in oklab, var(--primary) 55%, transparent);
+  --shadow-cta: 0 14px 34px -10px color-mix(in oklab, var(--cta) 65%, transparent);
+}
+
+:root {
+  --radius: 1rem;
+
+  --background: #0d0d0d;
+  --surface: #141414;
+  --foreground: #ffffff;
+
+  /* Violet électrique : accent principal (prix, badges, états actifs) */
+  --primary: #7c4dff;
+  --primary-foreground: #ffffff;
+  /* Bleu cyan : second accent (halo, détails) */
+  --cyan: #22d3ee;
+  /* Orange surnaturel : uniquement les CTA */
+  --cta: #ff7a18;
+  --cta-foreground: #ffffff;
+
+  --card: rgb(255 255 255 / 0.05);
+  --card-foreground: #ffffff;
+  --popover: #141414;
+  --popover-foreground: #ffffff;
+
+  --secondary: rgb(255 255 255 / 0.07);
+  --secondary-foreground: #ffffff;
+  --muted: rgb(255 255 255 / 0.06);
+  --muted-foreground: rgb(255 255 255 / 0.62);
+  --accent: rgb(255 255 255 / 0.1);
+  --accent-foreground: #ffffff;
+  --destructive: #ff4d4d;
+  --destructive-foreground: #ffffff;
+
+  --border: rgb(255 255 255 / 0.12);
+  --input: rgb(255 255 255 / 0.14);
+  --ring: var(--primary);
+
+  --sidebar: #141414;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgb(255 255 255 / 0.08);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.12);
+  --sidebar-ring: var(--primary);
+
+  /* =====================================================================
+   * TROIS PALETTES GLOBALES
+   * Pour changer la couleur d'un client : modifier UNIQUEMENT les
+   * variables --client-* ci-dessous. Toute la zone client suit.
+   * ===================================================================== */
+
+  /* 1. Zone client (menu, panier, commande) — ambre / orange */
+  --client-primary: #f59e0b; /* amber-500 */
+  --client-primary-strong: #ea580c; /* orange-600 */
+  --client-icon: #fbbf24; /* amber-400 : étoiles, panier */
+  --client-price: #fcd34d; /* amber-300 : prix */
+  --client-halo: #fb923c;
+
+  /* 2. Zone admin (back-office personnalisation) — bleu électrique / violet */
+  --admin-primary: #3b82f6;
+  --admin-secondary: #8b5cf6;
+  --admin-primary-strong: #6d28d9;
+
+  /* 3. Zone cuisine / caisse — vert émeraude */
+  --staff-primary: #10b981;
+  --staff-primary-strong: #059669;
+  --staff-secondary: #3b82f6;
+
+  /* Statuts de commande (communs) */
+  --status-recu: #f59e0b;
+  --status-preparation: #3b82f6;
+  --status-servi: #10b981;
+
+  /* Valeurs par défaut résolues par les classes de zone */
+  --cta-strong: var(--client-primary-strong);
+  --icon-accent: var(--client-icon);
+  --price: var(--client-price);
+}
+
+/* --- Mapping des palettes sur le design system --- */
+.zone-client {
+  --primary: var(--client-primary);
+  --cyan: var(--client-halo);
+  --cta: var(--client-primary);
+  --cta-strong: var(--client-primary-strong);
+  --icon-accent: var(--client-icon);
+  --price: var(--client-price);
+  --ring: var(--client-primary);
+}
+
+.zone-admin {
+  --primary: var(--admin-primary);
+  --cyan: var(--admin-secondary);
+  --cta: var(--admin-primary);
+  --cta-strong: var(--admin-primary-strong);
+  --icon-accent: var(--admin-secondary);
+  --price: var(--admin-secondary);
+  --ring: var(--admin-primary);
+}
+
+.zone-staff {
+  --primary: var(--staff-primary);
+  --cyan: var(--staff-secondary);
+  --cta: var(--staff-primary);
+  --cta-strong: var(--staff-primary-strong);
+  --icon-accent: var(--staff-primary);
+  --price: var(--staff-primary);
+  --ring: var(--staff-primary);
+}
+
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Halo lumineux ambré diffus (effet bokeh) — jamais de fond plat */
+@utility halo-scene {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-background);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        42rem 30rem at 12% -8%,
+        color-mix(in oklab, var(--primary) 42%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        34rem 26rem at 92% 8%,
+        color-mix(in oklab, var(--cyan) 32%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        38rem 28rem at 50% 108%,
+        color-mix(in oklab, var(--cyan) 20%, transparent),
+        transparent 72%
+      ),
+      linear-gradient(180deg, var(--surface), var(--background));
+    filter: blur(70px);
+    opacity: 0.75;
+  }
+}
+
+@utility halo-spot {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--primary) 45%, transparent),
+    transparent 70%
+  );
+  filter: blur(60px);
+}
+
+/* Arête du verre : liseré blanc translucide + reflet interne en haut */
+@utility glass {
+  background-image: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.1),
+    rgb(255 255 255 / 0.03) 45%,
+    rgb(255 255 255 / 0.02)
+  );
+  border: 1px solid rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.14),
+    inset 0 0 0 1px rgb(255 255 255 / 0.04);
+}
+
+@utility glass-strong {
+  background-image: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.15),
+    rgb(255 255 255 / 0.06) 45%,
+    rgb(255 255 255 / 0.04)
+  );
+  border: 1px solid rgb(255 255 255 / 0.18);
+  backdrop-filter: blur(28px) saturate(1.3);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.2),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+/* Verre liquide : bord épais, réfraction interne, ombre profonde */
+@utility liquid-glass {
+  position: relative;
+  background-image:
+    linear-gradient(
+      160deg,
+      rgb(255 255 255 / 0.16),
+      rgb(255 255 255 / 0.05) 38%,
+      rgb(255 255 255 / 0.02) 62%,
+      rgb(255 255 255 / 0.07)
+    );
+  border: 1px solid rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(26px) saturate(1.45);
+  box-shadow:
+    0 26px 60px -26px rgb(0 0 0 / 0.9),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.28),
+    inset 0 -1px 0 0 rgb(255 255 255 / 0.1),
+    inset 0 0 0 1px rgb(255 255 255 / 0.05);
+
+  &:hover {
+    border-color: color-mix(in oklab, var(--primary) 40%, rgb(255 255 255 / 0.16));
+    box-shadow:
+      0 30px 70px -24px rgb(0 0 0 / 0.95),
+      0 0 44px -14px color-mix(in oklab, var(--primary) 38%, transparent),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.34),
+      inset 0 -1px 0 0 rgb(255 255 255 / 0.12);
+  }
+}
+
+/* Confirmation visuelle brève lors d'un ajout */
+@utility liquid-glass-flash {
+  border-color: color-mix(in oklab, var(--primary) 65%, transparent);
+  box-shadow:
+    0 26px 60px -26px rgb(0 0 0 / 0.9),
+    0 0 46px -10px color-mix(in oklab, var(--primary) 55%, transparent),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.34);
+}
+
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Dégradé d'action : suit la palette de la zone active */
+@utility cta-gradient {
+  background-image: linear-gradient(135deg, var(--cta), var(--cta-strong));
+  color: var(--cta-foreground);
+}
+
+/* Bouton « Commandez » : dégradé profond, reflet balayant, halo pulsé */
+@utility btn-order {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--cta-foreground);
+  background-image: linear-gradient(
+    120deg,
+    color-mix(in oklab, var(--cta-strong) 90%, black 10%),
+    var(--cta) 45%,
+    var(--cta-strong)
+  );
+  box-shadow:
+    var(--shadow-cta),
+    0 0 0 1px color-mix(in oklab, white 22%, transparent) inset,
+    0 1.5px 0 color-mix(in oklab, white 35%, transparent) inset,
+    0 -10px 18px -8px color-mix(in oklab, black 35%, transparent) inset;
+
+  /* Reflet lumineux qui balaie le bouton */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      color-mix(in oklab, white 55%, transparent) 48%,
+      transparent 62%
+    );
+    transform: translateX(-110%);
+    animation: order-shine 3.2s ease-in-out infinite;
+  }
+
+  /* Halo pulsé autour du bouton */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -2;
+    border-radius: inherit;
+    background: var(--cta);
+    filter: blur(14px);
+    opacity: 0.45;
+    animation: order-halo 2.6s ease-in-out infinite;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+@keyframes order-shine {
+  0%, 55% {
+    transform: translateX(-110%);
+  }
+  85%, 100% {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes order-halo {
+  0%, 100% {
+    opacity: 0.35;
+    filter: blur(14px);
+  }
+  50% {
+    opacity: 0.6;
+    filter: blur(18px);
+  }
+}
+
+/* Entrée douce des cartes de plats */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@utility card-enter {
+  animation: card-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--enter-delay, 0) * 1ms);
+}
+
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+}
