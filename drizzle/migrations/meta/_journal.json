@@ -8,6 +8,13 @@
       "when": 1789138003182,
       "tag": "0000_allow_preparation_to_servi",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790008616769,
+      "tag": "0001_revoke_execute_security_definer_trigger_fn",
+      "breakpoints": true
     }
   ]
 }
